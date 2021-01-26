@@ -1,1 +1,1 @@
-# Chameleon Cloud Optimization System# terraform-harvester
+# terraform-harvester

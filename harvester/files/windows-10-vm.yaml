@@ -1,0 +1,181 @@
+apiVersion: kubevirt.io/v1alpha3
+kind: VirtualMachine
+metadata:
+  annotations:
+    kubevirt.io/latest-observed-api-version: v1alpha3
+    kubevirt.io/storage-observed-api-version: v1alpha3
+  finalizers:
+    - wrangler.cattle.io/VMController.UnsetOwnerOfDataVolumes
+  labels: {}
+  managedFields:
+    - apiVersion: kubevirt.io/v1alpha3
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:field.cattle.io/description': {}
+            'f:networks.harvester.cattle.io/ips': {}
+          'f:finalizers': {}
+          'f:labels':
+            .: {}
+            'f:harvester.cattle.io/creator': {}
+        'f:spec':
+          .: {}
+          'f:dataVolumeTemplates': {}
+          'f:running': {}
+          'f:template':
+            .: {}
+            'f:metadata':
+              .: {}
+              'f:annotations':
+                .: {}
+                'f:harvester.cattle.io/diskNames': {}
+                'f:harvester.cattle.io/sshNames': {}
+              'f:creationTimestamp': {}
+              'f:labels':
+                .: {}
+                'f:harvester.cattle.io/creator': {}
+                'f:harvester.cattle.io/vmName': {}
+            'f:spec':
+              .: {}
+              'f:domain':
+                .: {}
+                'f:cpu':
+                  .: {}
+                  'f:cores': {}
+                'f:devices':
+                  .: {}
+                  'f:disks': {}
+                  'f:inputs': {}
+                  'f:interfaces': {}
+                'f:machine':
+                  .: {}
+                  'f:type': {}
+                'f:resources':
+                  .: {}
+                  'f:requests':
+                    .: {}
+                    'f:memory': {}
+              'f:hostname': {}
+              'f:networks': {}
+              'f:volumes': {}
+      manager: harvester
+      operation: Update
+      time: '2021-01-26T13:59:42Z'
+    - apiVersion: kubevirt.io/v1alpha3
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            'f:kubevirt.io/latest-observed-api-version': {}
+            'f:kubevirt.io/storage-observed-api-version': {}
+        'f:status':
+          .: {}
+          'f:volumeSnapshotStatuses': {}
+      manager: virt-controller
+      operation: Update
+      time: '2021-01-26T13:59:42Z'
+  name: 'windows10'
+  namespace: default
+spec:
+  dataVolumeTemplates:
+    - apiVersion: cdi.kubevirt.io/v1alpha1
+      kind: DataVolume
+      metadata:
+        annotations:
+          cdi.kubevirt.io/storage.import.requiresScratch: 'true'
+          harvester.cattle.io/imageId: default/image-windows10
+        creationTimestamp: null
+        name: windows-cdrom-disk-win
+      spec:
+        pvc:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 20Gi
+          storageClassName: longhorn
+          volumeMode: Filesystem
+        source:
+          http:
+            certConfigMap: importer-ca-none
+            url: 'http://minio.harvester-system:9000/vm-images/image-windows10'
+    - apiVersion: cdi.kubevirt.io/v1alpha1
+      kind: DataVolume
+      metadata:
+        creationTimestamp: null
+        name: windows-rootdisk-win
+      spec:
+        pvc:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 32Gi
+          storageClassName: longhorn
+          volumeMode: Filesystem
+        source:
+          blank: {}
+  running: true
+  template:
+    metadata:
+      annotations:
+        harvester.cattle.io/diskNames: >-
+          ["windows-cdrom-disk-win","windows-rootdisk-win","windows-virtio-container-disk-win"]
+        harvester.cattle.io/sshNames: '[]'
+      creationTimestamp: null
+      labels:
+        harvester.cattle.io/creator: harvester
+        harvester.cattle.io/vmName: windows
+    spec:
+      domain:
+        cpu:
+          cores: 4
+        devices:
+          disks:
+            - bootOrder: 1
+              cdrom:
+                bus: sata
+              name: cdrom-disk
+            - disk:
+                bus: virtio
+              name: rootdisk
+            - cdrom:
+                bus: sata
+              name: virtio-container-disk
+            - disk:
+                bus: virtio
+              name: cloudinitdisk
+          inputs:
+            - bus: usb
+              name: tablet
+              type: tablet
+          interfaces:
+            - masquerade: {}
+              model: e1000
+              name: default
+        machine:
+          type: q35
+        resources:
+          requests:
+            memory: 4Gi
+      hostname: windows
+      networks:
+        - name: default
+          pod: {}
+      volumes:
+        - dataVolume:
+            name: windows-cdrom-disk-win
+          name: cdrom-disk
+        - dataVolume:
+            name: windows-rootdisk-win
+          name: rootdisk
+        - containerDisk:
+            image: kubevirt/virtio-container-disk
+          name: virtio-container-disk
+        - cloudInitNoCloud:
+            userData: |
+              #cloud-config
+              ssh_authorized_keys: []
+          name: cloudinitdisk

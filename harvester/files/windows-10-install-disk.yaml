@@ -1,0 +1,13 @@
+apiVersion: harvester.cattle.io/v1alpha1
+kind: VirtualMachineImage
+metadata:
+  name: image-windows10
+  annotations:
+    field.cattle.io/description: windowsimage
+  generateName: image-windows10
+  labels:
+    {}
+  namespace: default
+spec:
+  displayName: windows
+  url: 'https://thecrazyrussian.s3.amazonaws.com/Win10_2004_English_x64.iso'
