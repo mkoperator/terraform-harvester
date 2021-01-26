@@ -20,3 +20,15 @@ resource "k8s_manifest" "windows10_vm" {
     k8s_manifest.windows10_image,
   ]
 }
+
+
+locals {
+  linuxjeos_image  = file(join("/", [path.module, "files/opensuse-leap-jeos-15sp2-image.yaml"]))
+}
+
+resource "k8s_manifest" "linuxjeos_image" {
+  content = local.linuxjeos_image
+  depends_on = [
+    helm_release.harvester,
+  ]
+}

@@ -1,0 +1,16 @@
+apiVersion: harvester.cattle.io/v1alpha1
+kind: VirtualMachineImage
+metadata:
+  name: image-openjeos-leap-15sp2
+  annotations:
+    {}
+#    key: string
+  generateName: image-openjeos-leap-15sp2
+  labels:
+    {}
+#    key: string
+  namespace: default
+spec:
+  displayName: opensles-leap-jeos-15-sp2
+  url: >-
+    https://thecrazyrussian.s3.amazonaws.com/openSUSE-Leap-15.2-JeOS.x86_64-15.2-kvm-and-xen-Build31.186.qcow2
