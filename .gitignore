@@ -2,6 +2,7 @@
 **/.terraform/*
 
 infra/harvester-*
+infra/files/harvester-*
 # .tfstate files
 *.tfstate
 *.tfstate.*
