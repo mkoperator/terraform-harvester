@@ -17,7 +17,7 @@ locals {
 resource "k8s_manifest" "windows10_vm" {
   content = local.windows10_vm
   depends_on = [
-    k8s_manifest.windows10_image,
+    helm_release.harvester,
   ]
 }
 
